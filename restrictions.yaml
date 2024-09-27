@@ -1,0 +1,29 @@
+# Restrictions are whitelist rules for the tunnels
+# By default, all requests are denied and only if a restriction match, the request is allowed
+# https://github.com/erebe/wstunnel/blob/main/restrictions.yaml
+restrictions:
+  - name: "Allow all"
+    description: "This restriction allows all requests"
+    # This restriction apply only and only if all matchers match/are evaluated to true
+    # It is a logical AND
+    match:
+      # This match apply only if it succeeds to match the path prefix with the given regex
+      # The regex does a match, so if you want to match exactly you need to bound the pattern with ^ $
+      # I.e: "tesotron" is going to match "XXXtesotronXXX", but "^tesotron$" is going to match only "tesotron"
+      - !PathPrefix "^.*$"
+      # The only other possible match type for now is !Any, that match everything/any request
+      # - !Any
+
+    # This is the list of tunnels your restriction is going to allow
+    # The list is checked in order, the first match is going to allow the request
+    allow:
+      # !ReverseTunnel allows reverse tunnels
+      # Not specifying anything means all reverse tunnels are allowed
+      - !ReverseTunnel
+        protocol:
+          - Tcp
+        port:
+          - 7000..7001
+        cidr:
+          - 127.0.0.1/32
+          - ::1/128
